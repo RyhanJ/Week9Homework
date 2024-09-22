@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Per Capita Energy Consumption by Australian State</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.21.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.6.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.2"></script>
+</head>
+<body>
+    <div id="vis"></div>
+
+    <script type="text/javascript">
+        var spec = 
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Per Capita Energy Consumption by Australian State in 2024",
+    "fontSize": 18,
+    "fontWeight": "bold",
+    "anchor": "start",
+    "color": "black"
+  },
+  "width": 600,
+  "height": 550,
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/RyhanJ/Week9Homework/refs/heads/main/au-states-topo.json",
+        "format": {
+          "type": "topojson",
+          "feature": "austates"
+        }
+      },
+      "transform": [
+        {
+          "lookup": "id",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/RyhanJ/Week9Homework/refs/heads/main/australian_energy_consumption_by_state.csv"
+            },
+            "key": "State_Code",
+            "fields": ["Energy_Consumption", "Population", "State_Name"]
+          }
+        },
+        {
+          "calculate": "datum.Energy_Consumption / datum.Population",
+          "as": "Per_Capita_Consumption"
+        }
+      ],
+      "projection": {
+        "type": "albers",
+        "rotate": [-137, 0],
+        "center": [0, -27.5],
+        "parallels": [-18, -36],
+        "scale": 800,
+        "translate": [310, 280]
+      },
+      "mark": "geoshape",
+      "encoding": {
+        "color": {
+          "field": "Per_Capita_Consumption",
+          "type": "quantitative",
+          "legend": {
+            "orient": "right",
+            "direction": "vertical",
+            "gradientLength": 500,
+            "title": "Per Capita Consumption (PJ)",
+            "titleFontSize": 12,
+            "labelFontSize": 10,
+            "titleLimit": 200
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "graticule": true
+      },
+      "mark": {
+        "type": "geoshape",
+        "stroke": "lightgray",
+        "strokeWidth": 0.5
+      },
+      "projection": {
+        "type": "albers",
+        "rotate": [-137, 0],
+        "center": [0, -27.5],
+        "parallels": [-18, -36],
+        "scale": 800,
+        "translate": [310, 280]
+      }
+    }
+  ]
+}
+;
+        vegaEmbed('#vis', spec).catch(console.error);
+    </script>
+</body>
+</html>
